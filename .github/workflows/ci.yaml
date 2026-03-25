@@ -1,0 +1,35 @@
+name: MINGUI Build CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # Собираем под Windows (Visual Studio) и Linux (GCC)
+        os: [windows-latest, ubuntu-latest]
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Configure CMake
+      # Для Windows CMake сам выберет MSVC, для Linux - GCC
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build Library
+      run: cmake --build build --config Release
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: mingui-${{ matrix.os }}
+        path: |
+          build/Release/*.lib
+          build/*.a
