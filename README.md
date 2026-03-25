@@ -60,7 +60,7 @@ public:
     }
 };
 ```
-Как это выглядит на в запущенной игре:
+Как это выглядит в запущенной игре:
 
-<img width="876" alt="exampleVisual" src="https://github.com/ChancellorIkseew/minGUI/blob/main/dev/fr_audio.png">
+<img width="311" alt="exampleVisual" src="https://github.com/ChancellorIkseew/minGUI/blob/main/dev/fr_audio.png">
 
