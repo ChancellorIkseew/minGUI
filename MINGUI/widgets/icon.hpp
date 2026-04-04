@@ -1,10 +1,9 @@
 #pragma once
 #include <memory>
+#include <MINGUI/render/render_bridge.hpp>
 #include <MINGUI/widgets/ui_node.hpp>
 
 START_NAMESPACE_MINGUI
-
-struct TextureBridge;
 
 class Icon : public Node {
     std::unique_ptr<TextureBridge> texture;
@@ -16,6 +15,10 @@ public:
     //
     void draw(RenderQueue& queue) override;
     void callback(UIContext& context) override { }
+    //
+    void setTexture(TextureBridge* texture) {
+        this->texture.reset(texture);
+    }
 };
 
 END_NAMESPACE_MINGUI
