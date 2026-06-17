@@ -14,8 +14,8 @@ void MainCanvas::addToOverlay(std::unique_ptr<Container> container) {
     overlay.push_back(std::move(container));
 }
 
-void MainCanvas::update(UIContextBridge& contextBridge, const int frameDelay) {
-    textEdit.update(frameDelay);
+void MainCanvas::update(UIContextBridge& contextBridge, const int frameDelayMs) {
+    textEdit.update(frameDelayMs);
     UIContext context(contextBridge, textEdit, scale);
     if (!overlay.empty()) {
         overlay.back()->callback(context);
@@ -29,16 +29,6 @@ void MainCanvas::update(UIContextBridge& contextBridge, const int frameDelay) {
     }
     for (auto& it : mainLayer) refreshContainer(*it);
     for (auto& it : overlay)   refreshContainer(*it);
-}
-
-void MainCanvas::drawBatched(RenderBridge& renderBridge) {
-    for (const auto& it : mainLayer) {
-        it->draw(renderQueue);
-    }
-    if (hasOverlay())
-        overlay.back()->draw(renderQueue);
-    renderBridge.setScale(scale);
-    renderQueue.drawBatchedAndClear(renderBridge);
 }
 
 void MainCanvas::draw(RenderBridge& renderBridge) {
