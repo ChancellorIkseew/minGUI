@@ -4,7 +4,7 @@ MINGUI
 
 void Button::draw(RenderQueue& queue) {
     Clickable::draw(queue);
-    label.setPalette(getPalette());
+    label.setPalette(getPalette()); // temporary. Needs better fix
     label.draw(queue);
 }
 
@@ -15,11 +15,6 @@ void Button::setPosition(const Point position) {
 
 void Button::setText(const std::string& name) {
     label.setText(name);
-    centerText();
-}
-
-void Button::translate(const Localization& localization) {
-    label.translate(localization);
     centerText();
 }
 

@@ -14,7 +14,8 @@ struct Rect {
 
 struct Text {
     Point position;
-    std::u32string_view string;
+    Point glyphSize;
+    std::string_view string;
     uint32_t color;
 };
 

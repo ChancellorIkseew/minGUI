@@ -23,7 +23,7 @@ public:
         emplaceNode(node);
         return node;
     }
-    void applyPalette();
+    void setPaletteRecursive(const Palette& palette);
     virtual void arrange();
     void draw(RenderQueue& queue) override;
     void clear() { contents.clear(); }
@@ -33,11 +33,6 @@ public:
     void setPosition(const Point position) final {
         Node::setPosition(position);
         arrange();
-    }
-    void translate(const Localization& localization) final {
-        for (auto& it : contents) {
-            it->translate(localization);
-        }
     }
     void callback(UIContext& context) override {
         for (auto& it : contents) {

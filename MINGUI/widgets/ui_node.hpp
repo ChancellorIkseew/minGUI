@@ -1,28 +1,23 @@
 #pragma once
 #include <type_traits>
-#include <MINGUI/core/palette.hpp>
 #include <MINGUI/core/ui_context.hpp>
 #include <MINGUI/core/ui_defs.hpp>
 
 START_NAMESPACE_MINGUI
 
-class Localization;
-class RenderQueue;
-//
-class Layout;
 class AbstractButton;
+class Layout;
+class RenderQueue;
 
 class Node {
-    Palette palette = NULL_PALETTE;
+    Palette palette = DEFAULT_PALETTE;
     Point size, position;
 public:
-    Node(const Point size, const Point position) : size(size), position(position) { }
-    Node(const Point size)                       : size(size) { }
+    Node(const Point size) : size(size) { }
     Node() = default;
     virtual ~Node() = default;
     //
     virtual void draw(RenderQueue& queue);
-    virtual void translate(const Localization& localization) { }
     virtual void callback(UIContext& context) = 0;
     //
     Point getPosition() const noexcept { return position; }

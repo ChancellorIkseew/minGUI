@@ -3,9 +3,8 @@
 
 MINGUI
 
-MainCanvas::MainCanvas(const Point windowSize, Localization&& localization, const Palette palette, const float scale) :
-    windowSize(windowSize), localization(std::move(localization)), palette(palette), scale(scale), canvasSize(windowSize / scale) {
-}
+MainCanvas::MainCanvas(const Point windowSize, const float scale) :
+    windowSize(windowSize), scale(scale), canvasSize(windowSize / scale) {}
 
 void MainCanvas::addToMainLayer(std::unique_ptr<Container> container) {
     mainLayer.push_back(std::move(container));
@@ -17,21 +16,23 @@ void MainCanvas::addToOverlay(std::unique_ptr<Container> container) {
 void MainCanvas::update(UIContextBridge& contextBridge, const int frameDelayMs) {
     textEdit.update(frameDelayMs);
     UIContext context(contextBridge, textEdit, scale);
-    if (!overlay.empty()) {
+
+    if (!overlay.empty())
         overlay.back()->callback(context);
-        if (!overlay.back()->isOpen())
-            overlay.pop_back();
-    }
     else { // (overlay.empty)
         for (const auto& it : mainLayer) {
             it->callback(context);
         }
     }
-    for (auto& it : mainLayer) refreshContainer(*it);
-    for (auto& it : overlay)   refreshContainer(*it);
+
+    std::erase_if(mainLayer, [](const auto& it) {return !it->isOpen();});
+    std::erase_if(overlay,   [](const auto& it) {return !it->isOpen();});
 }
 
 void MainCanvas::draw(RenderBridge& renderBridge) {
+    for (const auto& it : mainLayer) refreshContainer(*it);
+    for (const auto& it : overlay)   refreshContainer(*it);
+
     for (const auto& it : mainLayer) {
         it->draw(renderQueue);
     }
@@ -57,28 +58,25 @@ bool MainCanvas::ownsMouse(const Point mousePosition) const noexcept {
     return false;
 }
 
-void MainCanvas::translate(Localization&& localization) {
-    this->localization = std::move(localization);
-    for (auto& it : mainLayer) it->translate(this->localization);
-    for (auto& it : overlay)   it->translate(this->localization);
-    relocateContainers(canvasSize);
+void MainCanvas::setPaletteRecursive(const Palette& palette) {
+    for (const auto& it : mainLayer) it->setPaletteRecursive(palette);
+    for (const auto& it : overlay)   it->setPaletteRecursive(palette);
 }
 
 void MainCanvas::closeLastOverlaped() noexcept {
     if (hasOverlay() && (!allwaysWithOverlay || overlay.size() > 1))
         overlay.back()->close();
 }
+void MainCanvas::closeAll() noexcept {
+    for (const auto& it : mainLayer) it->close();
+    for (const auto& it : overlay)   it->close();
+}
 
 void MainCanvas::refreshContainer(Container& container) const {
     if (!container.isDirty())
         return;
-    if (!container.getPalette().isValid())
-        container.setPalette(palette);
-    container.applyPalette();
     container.arrange();
-    container.translate(localization);
     container.applyAlignment(canvasSize);
-    container.applyAlignment(canvasSize); // temporary. needs bugfix
     container.markDirty(false);
 }
 
